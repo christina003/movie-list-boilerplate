@@ -1,7 +1,12 @@
 import React from 'react';
-import MoviesList from './MoviesList.jsx';
-import SearchBar from './SearchBar.jsx';
-import AddBar from './AddBar.jsx';
+import Movielist from './Movielist';
+import Navbar from "./Navbar";
+import TMDB_API_KEY from "../config/tmdb.js";
+import axios from 'axios';
+// import SearchBar from "./SearchBar";
+
+const TMDBAPI = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=`;
+
 
 const movies = [
 ];
@@ -11,65 +16,70 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      movies
-    };
-    this.searchMovies = this.searchMovies.bind(this);
-    this.addMovies = this.addMovies.bind(this);
-    //this.resetMovies = this.resetMovies.bind(this);
+      movies: movies,
+      allMovies: [],
+      watched: false
+    }
+ 
+    this.addMovie = this.addMovie.bind(this);
+    this.toggleWatched = this.toggleWatched.bind(this);
+    this.watchedMovies = this.watchedMovies.bind(this);
+    this.toWatchMovies = this.toWatchMovies.bind(this);
   }
 
-  //Filters movie function
-  searchMovies(input) {
-    let lcInput = input.toLowerCase();
-    const oldMovies = [...this.state.movies];
-    let filterMovies = [];
-    for (let i = 0; i < movies.length; i++) {
-      let lcMovie = movies[i].title.toLowerCase();
-      if (lcMovie.includes(lcInput)){
-       filterMovies.push(movies[i]);
-      }
-    }
-
-    if (filterMovies.length === 0) {
-      alert('Sorry, no movie titles match your search :(')
-      this.setState({
-        movies: oldMovies
-      })
-    } else {
-      this.setState({
-      movies: filterMovies
-  })}
-  };
-
-  //Adds a movie title to movie
-  addMovies (movie) {
+  addMovie (input) {
     const movies = [...this.state.movies];
-    movies.unshift({title: movie});
+    axios.get(TMDBAPI + input)
+      .then((response) => {
+        console.log(response.data);
+      });
+    // movies.push({title: input, watched: false});
+    // this.setState({
+    //   movies: movies,
+    //   allMovies: movies
+    // })
+  }
+
+  toggleWatched (title) {
+    const movies = [...this.state.movies];
+    movies.forEach(movie => {
+      if (movie.title === title) {
+        movie.watched = !movie.watched;
+      }
+    });
+
     this.setState({
       movies: movies
     })
-    console.log(movies);
+  }
+
+  watchedMovies () {
+      if (this.state.watched === true) {
+        this.setState({
+          watched: false
+        })
+      }
   };
 
-  // resetMovies () {
-  //   this.setState({
-  //     movies: movies
-  //   })
-  //   console.log(this.state.movies);
+  toWatchMovies () {
+    if (this.state.watched === false) {
+      this.setState({
+        watched: true
+      })
+    }
+  };
 
-  // }
-
-  render () {
+  render() {
     return (
-      <div id="moviebox">
-        <h1>Movie List</h1>
-        <AddBar addMovies={this.addMovies} />
-        <SearchBar searchMovies={this.searchMovies} resetMovies={this.resetMovies} />
-        <MoviesList movies={this.state.movies} />
+      <div>
+        <Navbar addMovie={this.addMovie} watchedMovies={this.watchedMovies} toWatchMovies={this.toWatchMovies}/>
+        {/* <SearchBar /> */}
+        <Movielist movies={this.state.movies.filter(movie => movie.watched === this.state.watched)} toggleWatched={this.toggleWatched}/>
       </div>
-    );
+    )
   }
-}
+
+};
 
 
 export default App;

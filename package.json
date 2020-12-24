@@ -4,26 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "live-server",
-    "react-dev": "webpack -d --watch"
+    "start": "nodemon server/index.js",
+    "build": "webpack --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/preset-env": "^7.6.2",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.6",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "@types/react": "^17.0.0",
+    "babel-loader": "^8.2.2",
     "express": "^4.17.1",
-    "react": "^16.10.1",
-    "react-dom": "^16.10.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.9",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@types/node": "^14.14.16",
+    "axios": "^0.21.1",
     "live-server": "^1.2.1",
-    "nodemon": "^1.19.3"
+    "nodemon": "^1.19.4"
   }
 }
