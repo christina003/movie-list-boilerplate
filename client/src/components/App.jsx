@@ -16,7 +16,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      movies: movies,
+      movies: [],
       allMovies: [],
       watched: false
     }
@@ -27,18 +27,21 @@ class App extends React.Component {
     this.toWatchMovies = this.toWatchMovies.bind(this);
   }
 
-  addMovie (input) {
+
+
+  addMovie (input) { 
     const movies = [...this.state.movies];
     axios.get(TMDBAPI + input)
       .then((response) => {
-        console.log(response.data);
-      });
-    // movies.push({title: input, watched: false});
-    // this.setState({
-    //   movies: movies,
-    //   allMovies: movies
-    // })
+        const newMovie = {watched: false, ...response.data.results[0]};
+        movies.push(newMovie);
+        this.setState({
+          movies: movies
+        })
+      })
   }
+
+ 
 
   toggleWatched (title) {
     const movies = [...this.state.movies];
@@ -47,7 +50,6 @@ class App extends React.Component {
         movie.watched = !movie.watched;
       }
     });
-
     this.setState({
       movies: movies
     })
@@ -68,6 +70,7 @@ class App extends React.Component {
       })
     }
   };
+
 
   render() {
     return (

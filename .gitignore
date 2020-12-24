@@ -1,4 +1,4 @@
 node_modules/
 bundle.js
-config/tmdb.js
+client/src/config/tmdb.js
 
