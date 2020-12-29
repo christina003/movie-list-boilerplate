@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const Movie = require('../models/movies.js');
+const url = require('../mongoURI.js');
 
 app.use(express.json());
 
@@ -15,7 +16,6 @@ const PORT = 3000 || process.env.PORT;
 app.use(express.static('public'));
 
 
-const url = "mongodb+srv://student:student@cluster0.hmpwd.mongodb.net/Cluster0?retryWrites=true";
 
 mongoose.connect(url, {
   useNewUrlParser: true,
