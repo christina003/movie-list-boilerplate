@@ -25,33 +25,43 @@ class App extends React.Component {
     this.toggleWatched = this.toggleWatched.bind(this);
     this.watchedMovies = this.watchedMovies.bind(this);
     this.toWatchMovies = this.toWatchMovies.bind(this);
+    this.getMovies = this.getMovies.bind(this);
+    this.deleteMovie = this.deleteMovie.bind(this);
+  }
+
+  componentDidMount(){
+    this.getMovies();
   }
 
 
+  getMovies () {
+    axios.get('/movies')
+    .then(res => {
+      this.setState({
+        movies: res.data
+      })
+    })
+  }
 
-  addMovie (input) { 
-    const movies = [...this.state.movies];
-    axios.get(TMDBAPI + input)
+  addMovie(movie) {
+    axios.post('/movies', movie)
       .then((response) => {
-        const newMovie = {watched: false, ...response.data.results[0]};
-        movies.push(newMovie);
-        this.setState({
-          movies: movies
-        })
+        this.getMovies();
       })
   }
 
- 
+  deleteMovie(id) {
+    axios.delete('/movies/' + `${id}`)
+    .then((response) => {
+      this.getMovies();
+    })
+  }
 
-  toggleWatched (title) {
-    const movies = [...this.state.movies];
-    movies.forEach(movie => {
-      if (movie.title === title) {
-        movie.watched = !movie.watched;
-      }
-    });
-    this.setState({
-      movies: movies
+  toggleWatched (id) {
+    console.log(id);
+    axios.patch('/movies/' + `${id}`)
+    .then((response) => {
+      this.getMovies();
     })
   }
 
@@ -77,7 +87,7 @@ class App extends React.Component {
       <div>
         <Navbar addMovie={this.addMovie} watchedMovies={this.watchedMovies} toWatchMovies={this.toWatchMovies}/>
         {/* <SearchBar /> */}
-        <Movielist movies={this.state.movies.filter(movie => movie.watched === this.state.watched)} toggleWatched={this.toggleWatched}/>
+        <Movielist movies={this.state.movies.filter(movie => movie.watched === this.state.watched)} toggleWatched={this.toggleWatched} deleteMovie={this.deleteMovie}/>
       </div>
     )
   }
