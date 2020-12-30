@@ -8,17 +8,15 @@ import axios from 'axios';
 const TMDBAPI = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=`;
 
 
-const movies = [
-];
-
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       movies: [],
-      allMovies: [],
-      watched: false
+      watched: false,
+      addSearch: false,
+      addMovieSearch: []
     }
  
     this.addMovie = this.addMovie.bind(this);
@@ -27,6 +25,7 @@ class App extends React.Component {
     this.toWatchMovies = this.toWatchMovies.bind(this);
     this.getMovies = this.getMovies.bind(this);
     this.deleteMovie = this.deleteMovie.bind(this);
+    this.addMovieSearch = this.addMovieSearch.bind(this);
   }
 
   componentDidMount(){
@@ -44,11 +43,21 @@ class App extends React.Component {
   }
 
   addMovie(movie) {
-    axios.post('/movies', movie)
+    const currentMovies = this.state.movies;
+
+    const exists = currentMovies.some(m => m.id === movie.id);
+
+    if (!exists) {
+      movie.watched = false;
+      axios.post('/movies', movie)
       .then((response) => {
         this.getMovies();
-      })
+      })  
+    } else {
+      alert('This movie is already on your list!');
+    }
   }
+  
 
   deleteMovie(id) {
     axios.delete('/movies/' + `${id}`)
@@ -66,28 +75,49 @@ class App extends React.Component {
   }
 
   watchedMovies () {
-      if (this.state.watched === true) {
+      if (this.state.watched === true || this.state.watched === 'off') {
         this.setState({
-          watched: false
+          watched: false,
+          addSearch: false
         })
       }
   };
 
   toWatchMovies () {
-    if (this.state.watched === false) {
+    if (this.state.watched === false || this.state.watched === 'off') {
       this.setState({
-        watched: true
+        watched: true,
+        addSearch: false
       })
     }
   };
+
+  addMovieSearch(input) {
+    if (input.length > 1) {
+      this.setState({
+        addSearch: !this.state.addSearch,
+        watched: 'off'
+      })
+      axios.get(TMDBAPI + input)
+      .then((response) => {
+          this.setState({
+            addMovieSearch: response.data.results.slice(0,20)
+          })
+      })
+  }
+  }
 
 
   render() {
     return (
       <div>
-        <Navbar addMovie={this.addMovie} watchedMovies={this.watchedMovies} toWatchMovies={this.toWatchMovies}/>
+        <Navbar watchedMovies={this.watchedMovies} toWatchMovies={this.toWatchMovies} addMovieSearch={this.addMovieSearch}/>
         {/* <SearchBar /> */}
-        <Movielist movies={this.state.movies.filter(movie => movie.watched === this.state.watched)} toggleWatched={this.toggleWatched} deleteMovie={this.deleteMovie}/>
+        <Movielist movies={this.state.addSearch ? this.state.addMovieSearch : this.state.movies.filter(movie => movie.watched === this.state.watched)} 
+                   toggleWatched={this.toggleWatched} 
+                   deleteMovie={this.deleteMovie} 
+                   addSearch={this.state.addSearch} 
+                   addMovie={this.addMovie}/>
       </div>
     )
   }

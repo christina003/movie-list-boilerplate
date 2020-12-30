@@ -26,7 +26,6 @@ const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log("Connected to Mongo Database"));
 
-
 app.get('/movies', async (req, res) => {
   try {
     const movies = await Movie.find();
@@ -68,6 +67,7 @@ app.post('/movies', async (req, res) => {
   try {
     const newMovie = await movie.save();
     res.status(200).json(newMovie);
+    console.log('successfully added movie');
   } catch (err) {
     res.status(400).json({ message: err });
     console.log(err);
